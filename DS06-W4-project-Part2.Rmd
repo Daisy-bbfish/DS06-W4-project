@@ -1,0 +1,94 @@
+---
+title: " ToothGrowth data Analysis"
+author: "Daisy Wu"
+date: "2017年12月18日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Description of the data
+In this part of the project, we will analyze the dataset ToothGrowth. This dataset is made of 60 observations of tooth growth of Guinea pigs and the effect of dose of vitamin C on the growth. The delivery method is a two-values factor variable : “OJ” (Orange Juice) and VC (Ascorbi Acid, a form of Vitamin C). The dose given contains three different values : 0.5, 1, and 2 mg/day. The measures are done on 10 Guinea pigs.
+
+## Load data
+Let us show below the structure of the data frame, and the first values.
+```{r}
+library(datasets)
+str(ToothGrowth)
+```
+
+```{r}
+data(ToothGrowth)
+```
+```{r}
+head(ToothGrowth)
+```
+
+## Summary
+We check if there are NA values and display the summary information for this dataset :
+```{r}
+sum(!complete.cases(ToothGrowth))
+```
+So there is no row with NA value. Let us have a look on the data summary :
+```{r}
+summary(ToothGrowth)
+```
+
+## Exploratory Analysis
+In this section, we will give a summary exploratory analysis
+```{r}
+library(ggplot2)
+```
+
+```{r}
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+gplot1 <- ggplot(ToothGrowth, aes(x=dose, y=len,fill=dose)) +  geom_boxplot() +  ggtitle("Fig. 1 : dispersion of tooth growth by dose") + xlab("dose in mg") + ylab("tooth length")
+gplot1
+```
+
+We can see that the higher the dose is, the longer the teeth are. We can notice that for a dose of 1 mg, the mean is nearly twice than for dose 0.5 mg. The progression is then lower when the dose is 2 mg. The position of the boxes are really different; this is a first clue for suggesting that the tooth length depends a lot of the dose.
+
+Let’s now look at the influence of the delivery method.
+
+```{r}
+gplot2 <- ggplot(ToothGrowth, aes(x=supp, y=len,fill=supp)) +  geom_boxplot() +  ggtitle("Dispersion of tooth growth by delivery method") + xlab("delivery method") + ylab("tooth length")
+gplot2
+```
+
+The boxes are quite similar. However, the median is much higher for Orange Juice than for Vitamin C; that means that for Orange Juice, the high values are more numerous than the low values, in comparison with Vitamin C.
+
+## Hypothesis tests
+Now we will test if the delivery mode has an influence on the tooth growth. nul hypothesis H0 could be formulated as follows :
+
+#### H0 : The delivery mode of Vitamin C does not have any influence on the tooth growth
+```{r}
+TGdose <- ToothGrowth$dose
+TGsupp <- ToothGrowth$supp
+TGlen <-  ToothGrowth$len
+
+t.test(TGlen[TGsupp == "VC"],TGlen[TGsupp == "OJ"], paired=FALSE)
+```
+
+This first test shows the following :
+
+* the p-value is 0.06, i.e. nearly the significance level αα = 0.05. So we do not reject the null hypothesis, but as 0.05≦0.05≦ p-value ≦0.1≦0.1, it is not clearly obvious that we can reject the null hypothesis.
+* the confidence interval contains 0, so the test is not really significant.
+Now let’s try to test the influence of the dose on the tooth growth
+
+```{r}
+t.test(TGlen[TGdose == 0.5],TGlen[TGdose == 1], paired=FALSE)
+```
+
+In this test, we can clearly see that the quantity of Vitamin C has an impact on the tooth growth :
+
+* the p-value is nearly 0, so we can obviously reject H0
+* the confidence interval does not contain 0.
+
+An identical conclusion can be taken comparing the length of dose = 1 and dose = 2. This could already be detected from the boxplot above.
+
+## Conclusion :
+* the dose of Vitamin C is clearly a factor of growth of the teeth for Guinea pigs
+* the delivery mode (Ascorbic Acid or Orange Juice) does not have any obvious impact on the teeth growth for Guinea pigs.
+
