@@ -2,6 +2,9 @@
 title: "Simulation Exercise of Statistical Inference"
 author: "Daisy Wu"
 date: "2017年12月15日"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```
